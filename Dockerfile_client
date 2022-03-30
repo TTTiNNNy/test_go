@@ -1,0 +1,5 @@
+FROM archlinux
+ADD . /home/go_project
+RUN yes Y | pacman -Sy go
+RUN yes Y | pacman -Sy git
+WORKDIR "/home/go_project"
