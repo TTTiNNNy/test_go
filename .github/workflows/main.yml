@@ -22,6 +22,14 @@ jobs:
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
+    
+      - name: login to GitHub Container Registry
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: tttinnny
+          password: ${{ secrets.PAT }}
+    
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v3
 
@@ -33,6 +41,7 @@ jobs:
       - name: Run a multi-line script
         env:
           CR_PAT: ${{ secrets.PAT }}
+          
         run: |
           docker build -t own_cargo_server -f Dockerfile_server . --tag ghcr.io/tttinnny/own_cargo_server:latest
           docker run ghcr.io/tttinnny/own_cargo_server:latest
