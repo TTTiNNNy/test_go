@@ -33,18 +33,14 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v3
 
-      # Runs a single command using the runners shell
-      - name: Run a one-line script
-        run: echo Hello, world!
-
       # Runs a set of commands using the runners shell
-      - name: Run a multi-line script
+      - name: Build and push docker image
         env:
           CR_PAT: ${{ secrets.PAT }}
           
         run: |
-          docker build -t own_cargo_server -f Dockerfile_server . --tag ghcr.io/tttinnny/own_cargo_server:latest
-          docker run ghcr.io/tttinnny/own_cargo_server:latest
-          docker push ghcr.io/tttinnny/own_cargo_server:latest
+          docker build -t own_cargo -f Dockerfile . --tag ghcr.io/tttinnny/own_cargo:latest
+          docker run ghcr.io/tttinnny/own_cargo:latest
+          docker push ghcr.io/tttinnny/own_cargo:latest
           
           echo Done.
