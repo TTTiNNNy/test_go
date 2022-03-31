@@ -31,6 +31,11 @@ jobs:
 
       # Runs a set of commands using the runners shell
       - name: Run a multi-line script
+        env:
+          CR_PAT: ${{ PAT }}
         run: |
-          echo Add other actions to build,
-          echo test, and deploy your project.
+          docker build -t own_cargo_server -f Dockerfile_server . --tag ghcr.io/tttinnny/own_cargo_server:latest
+          docker run ghcr.io/tttinnny/own_cargo_server:latest
+          docker push ghcr.io/tttinnny/own_cargo_server:latest
+          
+          echo Done.
