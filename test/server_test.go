@@ -3,13 +3,11 @@ package test
 import (
 	"context"
 	"encoding/json"
-	"errors"
 	"flag"
 	"fmt"
 	"log"
 	"net"
 	"os"
-	"regexp"
 	"testing"
 	"time"
 
@@ -25,8 +23,8 @@ var (
 	addr = flag.String("addr", "localhost:8088", "the address to connect to")
 )
 
-func startServer() {
-	listener, err := net.Listen("tcp", ":8088")
+func startServer(port int) {
+	listener, err := net.Listen("tcp", fmt.Sprintf(":%d", port))
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
@@ -49,7 +47,7 @@ func startClient() (*grpc.ClientConn, ChallengeServiceClient) {
 
 func TestMetaData(t *testing.T) {
 
-	go startServer()
+	go startServer(8088)
 
 	time.Sleep(time.Second)
 	conn, client := startClient()
@@ -68,11 +66,13 @@ func TestMetaData(t *testing.T) {
 		}
 	}
 	fmt.Println("json: ", x)
+	log.Default().Println("TestMetaData done")
+
 }
 
 func TestShortLink(t *testing.T) {
 
-	go startServer()
+	go startServer(8089)
 
 	time.Sleep(time.Second)
 	conn, client := startClient()
@@ -90,26 +90,6 @@ func TestShortLink(t *testing.T) {
 	if x["id"] != "bit.ly/3wLOGyH" {
 		t.Error("reference and read links dont match")
 	}
+	log.Default().Println("TestShortLink done")
 
-}
-
-func Hello(name string) (string, error) {
-	// If no name was given, return an error with a message.
-	if name == "" {
-		return name, errors.New("empty name")
-	}
-	// Create a message using a random format.
-	// message := fmt.Sprintf(randomFormat(), name)
-	message := "fmt.Sprint(randomFormat())"
-	return message, nil
-}
-
-func TestHelloName(t *testing.T) {
-	name := "Gladys"
-	want := regexp.MustCompile(`\b` + name + `\b`)
-	msg, err := Hello("Gladys")
-	if !want.MatchString(msg) || err != nil {
-
-		//t.Fatalf(`Hello("Gladys") = %q, %v, want match for %#q, nil`, msg, err, want)
-	}
 }
