@@ -64,13 +64,13 @@ func (TestRPCServer) MakeShortLink(ctx context.Context, link *Link) (*Link, erro
 	return &Link{Data: string(bodyText)}, nil
 }
 
-var timerPull = make(map[string]Timer)
+var TimerPull = make(map[string]Timer)
 
 func (TestRPCServer) StartTimer(timer *Timer, srv ChallengeService_StartTimerServer) error {
 
-	if exTimer, ok := timerPull[timer.Name]; ok {
+	if exTimer, ok := TimerPull[timer.Name]; ok {
 		for exTimer.GetSeconds() > 0 {
-			exTimer = timerPull[timer.Name]
+			exTimer = TimerPull[timer.Name]
 
 			if err := srv.Send(&exTimer); err != nil {
 				log.Printf("send error %v", err)
@@ -80,12 +80,11 @@ func (TestRPCServer) StartTimer(timer *Timer, srv ChallengeService_StartTimerSer
 		}
 	} else {
 		newTimer := Timer{Name: timer.Name, Frequency: timer.Frequency, Seconds: timer.Seconds}
-		timerPull[timer.Name] = newTimer
+		TimerPull[timer.Name] = newTimer
 
 		for newTimer.GetSeconds() > 0 {
 
-			timerPull[timer.Name] = newTimer
-			println("sec:", newTimer.Seconds, "sec/freq: ", newTimer.GetSeconds()/newTimer.Frequency)
+			TimerPull[timer.Name] = newTimer
 			if err := srv.Send(&newTimer); err != nil {
 				log.Printf("send error %v", err)
 				status.Errorf(codes.Unimplemented, "method StartTimer failed during Send method")
@@ -94,7 +93,7 @@ func (TestRPCServer) StartTimer(timer *Timer, srv ChallengeService_StartTimerSer
 			time.Sleep(time.Duration(timer.Frequency) * time.Second)
 		}
 	}
-	delete(timerPull, timer.Name)
+	delete(TimerPull, timer.Name)
 
 	return nil
 }
