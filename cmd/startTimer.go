@@ -43,7 +43,6 @@ to quickly create a Cobra application.`,
 
 		res, err := c.StartTimer(context.Background(), &proto.Timer{Name: name, Seconds: int64(duration), Frequency: int64(frequency)})
 
-		var i = 0
 		if err == nil {
 			for {
 				resp, err := res.Recv()
@@ -58,7 +57,6 @@ to quickly create a Cobra application.`,
 				}
 				fmt.Printf("%+v\n", resp)
 
-				i++
 			}
 
 		} else {
